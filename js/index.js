@@ -38,6 +38,7 @@ async function onSubmit(form){
         let res = await axios.post("https://mock-api.driven.com.br/api/v6/uol/participants",obj);
         
         if(res.status === 200){
+            intervalPersistencia();
             apagaContainer();
             telaConversa();
         }
@@ -72,6 +73,7 @@ function telaConversa(){
     let container = document.querySelector('container');
     container.classList.remove('telaLogin');
     container.classList.add('telaMensagens');
+    let input = document.querySelector('footer input');
 
     criaHeader();
     criaFooter();
@@ -84,6 +86,14 @@ function telaConversa(){
         telaLogin();
         mensagemErro("Usuário desconectado. Por favor refaça o login");
     }
+
+    input.addEventListener('keydown', function(e){
+        if(e.keyCode === 13){
+            let text = input.value;
+            enviarMensagem('message',text,'Todos');
+        }
+    });
+
 }
 async function getMensagens(){
     let res = await axios.get('https://mock-api.driven.com.br/api/v6/uol/messages');
@@ -112,13 +122,18 @@ function criaFooter(){
     input.setAttribute('placeholder','Escreva aqui...');
     input.setAttribute('type','text');
     ionIcon.setAttribute('name','paper-plane-outline');
+    ionIcon.setAttribute('onClick','onClick()');
 
     footer.appendChild(input);
     footer.appendChild(ionIcon);
 
     footer.classList.remove('displayNone');
 }
-
+function onClick(){
+    let input = document.querySelector('footer input');
+    let text = input.value;
+    enviarMensagem('message',text,'Todos');
+}
 function addMensagens(res){
     console.log(res);
     let container = document.querySelector('.container');
@@ -171,7 +186,6 @@ function addMensagens(res){
         }
 
         if(res.data[i].type === "private_message"){
-            console.log('entrei mamãe')
             if(res.data[i].to === 'Todos' || res.data[i].to === nome){
                 text.innerHTML = 'reservadamente para';
                 mensagem.appendChild(remetente);
@@ -189,6 +203,31 @@ function addMensagens(res){
     }
 
     container.appendChild(div2);
+}
+function intervalPersistencia(){
+    console.log('entrei papai');
+    let obj = {
+        name:nome
+    }
+    setInterval(()=>{
+        axios.post('https://mock-api.driven.com.br/api/v6/uol/status',obj);
+    },5000);
+}
+
+async function enviarMensagem(type,text,to){
+    console.log('chamada');
+    let obj =   {
+        from: nome,
+        to: to,
+        text: text,
+        type: type
+    }
+
+    await axios.post('https://mock-api.driven.com.br/api/v6/uol/messages',obj);
+
+    apagaContainer();
+    getMensagens();
+
 }
 
 telaLogin();
