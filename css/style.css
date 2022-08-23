@@ -2,13 +2,20 @@
     box-sizing: border-box;
     font-family: 'Roboto',sans-serif;
 }
+html{
+    height: 100vh;
+}
+body{
+    background-color: #F3F3F3;
+    height: 100%;
+}
 .telaLogin img{
-    margin-top: 72px;
-    margin-bottom: 94px;
+    margin-bottom: 60px;
     width: 130px;
     height: 92px;
 }
 .telaLogin{
+    background-color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -47,7 +54,6 @@ form button{
 }
 
 .header{
-    z-index: 1000;
     position: fixed;
     height: 80px;
     width: 100%;
@@ -55,6 +61,7 @@ form button{
     align-items: center;
     justify-content: space-between;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
+    background-color: white;
 }
 
 .header ion-icon{
@@ -66,7 +73,6 @@ form button{
 }
 
 .footer{
-    z-index: 1;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -76,6 +82,7 @@ form button{
     align-items: center;
     justify-content: space-between;
     box-shadow: 0px -4px 6px rgba(0, 0, 0, 0.05);
+    background-color: white;
 }
 
 .footer ion-icon{
@@ -104,13 +111,48 @@ form button{
     text-align: center;
 }
 .telaMensagens{
-    overflow: hidden;
-    width: 500px;
-    height: 500px;
-    text-overflow: clip;
-    padding-top:80px;
+    width: 100%;
+    height: 100%;
+    margin: 80px 0;
     background-color: #F3F3F3;
 }
 .displayNone{
     display: none;
+}
+.mensagem{
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    word-wrap: break-word;
+    border-radius: 2px;
+}
+
+.mensagem .time{
+    color: #AAAAAA;
+    margin-left: 10px;
+}
+.mensagem{
+    margin: 5px 0;
+}
+
+.mensagem p{
+    margin: 0 5px;
+}
+
+.status{
+    background-color: #DCDCDC;
+}
+.message{
+    background-color: white;
+}
+
+.private_message{
+    background-color: #FFDEDE;
+}
+.bold{
+    font-weight: 700;
+}
+.px{
+    height: 80px;
 }
