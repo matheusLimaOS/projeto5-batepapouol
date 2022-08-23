@@ -1,0 +1,116 @@
+*{
+    box-sizing: border-box;
+    font-family: 'Roboto',sans-serif;
+}
+.telaLogin img{
+    margin-top: 72px;
+    margin-bottom: 94px;
+    width: 130px;
+    height: 92px;
+}
+.telaLogin{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form input{
+    height: 54px;
+    width: 260px;
+    text-align: center;
+    border: 1px solid #D7D7D7;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-weight: 400;
+    font-size: 18px;
+}
+
+form button{
+    color: #696969;
+    font-weight: 400;
+    font-size: 18px;
+    height: 45px;
+    width: 110px;
+    text-align: center;
+    border-radius: 9px;
+    background: #E7E7E7;
+    border: 0;
+}
+
+.header{
+    z-index: 1000;
+    position: fixed;
+    height: 80px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.header ion-icon{
+    font-size: 50px;
+    margin-right: 25px;
+}
+.header img{
+    margin-left: 25px;
+}
+
+.footer{
+    z-index: 1;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0px -4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.footer ion-icon{
+    font-size: 26px;
+    margin-right: 25px;
+}
+.footer input{
+    font-style: italic;
+    font-weight: 400;
+    font-size: 18px;
+    border: 0;
+    width: 70%;
+    margin-left: 25px;
+}
+
+.erro{
+    position: absolute;
+    bottom: 10px;
+    width: 80%;
+    border-radius: 10px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #F8D7DA;
+    text-align: center;
+}
+.telaMensagens{
+    overflow: hidden;
+    width: 500px;
+    height: 500px;
+    text-overflow: clip;
+    padding-top:80px;
+    background-color: #F3F3F3;
+}
+.displayNone{
+    display: none;
+}
