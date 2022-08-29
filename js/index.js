@@ -1,9 +1,9 @@
 let nome;
 
 function telaLogin(){
-    let container = document.querySelector('.container');
+    let containerDiv = document.querySelector('container div');
     let img = document.createElement('img');
-    let form = document.createElement('form');
+    let form = document.createElement('form'); 
     let input = document.createElement('input');
     let botao = document.createElement('button');
 
@@ -23,9 +23,9 @@ function telaLogin(){
         onSubmit(this);
     })
 
-    container.classList.add('telaLogin');
-    container.appendChild(img);
-    container.appendChild(form);
+    containerDiv.classList.add('telaLogin');
+    containerDiv.appendChild(img);
+    containerDiv.appendChild(form);
 }
 
 async function onSubmit(form){
@@ -34,29 +34,27 @@ async function onSubmit(form){
         name : nome
     }
 
-    try{
-        let res = await axios.post("https://mock-api.driven.com.br/api/v6/uol/participants",obj);
-        
-        if(res.status === 200){
-            intervalPersistencia();
-            apagaContainer();
-            telaConversa();
-        }
+    let res = axios.post("https://mock-api.driven.com.br/api/v6/uol/participants",obj);
 
-    }
-    catch(e){
+    res.then((data)=>{
+        intervalPersistencia();
+        apagaContainer();
+        telaConversa();
+    })
+    res.catch(()=>{
         mensagemErro('Esse nome não está disponivel! Por favor insira outro.');
-    }
+    })
+    
 
 }
 
 function apagaContainer(){
-    let container = document.querySelector('container');
-    let tam = container.children.length;
+    let containerDiv = document.querySelector('container div');
+    let tam = containerDiv.children.length;
     let i=0;
 
     for(i=0;i<tam;i++){
-        container.children[0].remove();
+        containerDiv.children[0].remove();
     }
 
 }
@@ -69,36 +67,42 @@ function mensagemErro(msg){
     tagP.classList.add('erro');
     container.appendChild(tagP);
 }
-function telaConversa(){
-    let container = document.querySelector('container');
-    container.classList.remove('telaLogin');
-    container.classList.add('telaMensagens');
+async function telaConversa(){
+    let containerDiv = document.querySelector('container div');
+    containerDiv.classList.remove('telaLogin');
+    containerDiv.classList.add('telaMensagens');
+
+
+    await criaHeader();
+    await criaFooter();
+
+    getMensagens();
+    apagaContainer();
+
     let input = document.querySelector('footer input');
-
-    criaHeader();
-    criaFooter();
-
-    try{
-        getMensagens();
-    }
-    catch(e){
-        apagaContainer();
-        telaLogin();
-        mensagemErro("Usuário desconectado. Por favor refaça o login");
-    }
-
     input.addEventListener('keydown', function(e){
         if(e.keyCode === 13){
             let text = input.value;
             enviarMensagem('message',text,'Todos');
         }
     });
-
 }
-async function getMensagens(){
-    let res = await axios.get('https://mock-api.driven.com.br/api/v6/uol/messages');
-    apagaContainer();
-    addMensagens(res);
+function getMensagens(){
+
+    let res = axios.get('https://mock-api.driven.com.br/api/v6/uol/messages');
+
+    res.then(async (data)=>{
+        apagaContainer();
+        await addMensagens(data);
+    
+        let ultimaMSG = document.querySelector(".telaMensagens div:last-child");
+        ultimaMSG.scrollIntoView();
+    })
+    res.catch(()=>{
+        alert("Erro ao carregar mensagens, você será redirecionado a pagina de login!");
+        window.location.reload();
+    })
+
 }
 function criaHeader(){
     let header = document.querySelector('.header');
@@ -135,15 +139,7 @@ function onClick(){
     enviarMensagem('message',text,'Todos');
 }
 function addMensagens(res){
-    console.log(res);
-    let container = document.querySelector('.container');
-    let div = document.createElement('div');
-    let div2 = document.createElement('div');
-
-    div.classList.add('px');
-    div2.classList.add('px');
-    container.appendChild(div);
-
+    let container = document.querySelector('.telaMensagens');
     let i=0;
 
     for(i=0;i<res.data.length;i++){
@@ -201,16 +197,19 @@ function addMensagens(res){
 
         container.appendChild(mensagem);
     }
-
-    container.appendChild(div2);
 }
 function intervalPersistencia(){
-    console.log('entrei papai');
     let obj = {
         name:nome
     }
     setInterval(()=>{
-        axios.post('https://mock-api.driven.com.br/api/v6/uol/status',obj);
+        let res = axios.post('https://mock-api.driven.com.br/api/v6/uol/status',obj);
+
+        res.catch(()=>{
+            alert("Você foi desconectado. Por favor refazer o login");
+            window.location.reload();
+        })
+        
     },5000);
 }
 
@@ -223,10 +222,16 @@ async function enviarMensagem(type,text,to){
         type: type
     }
 
-    await axios.post('https://mock-api.driven.com.br/api/v6/uol/messages',obj);
+    let res = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages',obj);
 
-    apagaContainer();
-    getMensagens();
+    res.then((data)=>{
+        apagaContainer();
+        getMensagens();
+    })
+    res.catch(()=>{
+        alert("Erro ao enviar a mensagem, você será redirecionado a pagina de login!");
+        window.location.reload();
+    })
 
 }
 
