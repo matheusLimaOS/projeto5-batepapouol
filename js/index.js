@@ -56,7 +56,7 @@ async function onSubmit(form){
         name : nome
     }
 
-    let res = axios.post("https://mock-api.driven.com.br/api/v6/uol/participants",obj);
+    let res = axios.post("https://mock-api.driven.com.br/api/v2/uol/participants",obj);
 
     carregamento();
 
@@ -126,7 +126,7 @@ async function telaConversa(){
 }
 function getMensagens(){
 
-    let res = axios.get('https://mock-api.driven.com.br/api/v6/uol/messages');
+    let res = axios.get('https://mock-api.driven.com.br/api/v2/uol/messages');
 
     res.then(async (data)=>{
         apagaContainer();
@@ -209,7 +209,7 @@ function addMensagens(res){
         }
 
         else if(res.data[i].type === "private_message"){
-            if(res.data[i].to === 'Todos' || res.data[i].to === nome){
+            if(res.data[i].to === 'Todos' || res.data[i].to === nome || res.data[i].from === nome){
                 container.innerHTML += `
                 <div class= 'mensagem ${res.data[i].type}'>
                     <p>
@@ -230,7 +230,7 @@ function intervalPersistencia(){
         name:nome
     }
     setInterval(()=>{
-        let res = axios.post('https://mock-api.driven.com.br/api/v6/uol/status',obj);
+        let res = axios.post('https://mock-api.driven.com.br/api/v2/uol/status',obj);
 
         res.catch(()=>{
             alert("Você foi desconectado. Por favor refazer o login");
@@ -339,7 +339,7 @@ function apagaListaParticipantes(){
     participantes.innerHTML='';
 }
 function listaParticipantes(){
-    let res = axios.get("https://mock-api.driven.com.br/api/v6/uol/participants");
+    let res = axios.get("https://mock-api.driven.com.br/api/v2/uol/participants");
 
     res.then((data)=>{
         let participantes = document.querySelector('.participantes');
@@ -425,7 +425,7 @@ async function enviarMensagem(text){
         return;
     }
     else{
-        let res = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages',obj);
+        let res = axios.post('https://mock-api.driven.com.br/api/v2/uol/messages',obj);
 
         res.then((data)=>{
             let input = document.querySelector('footer input');
