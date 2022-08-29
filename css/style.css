@@ -161,6 +161,7 @@ form button{
     overflow: hidden;
     text-overflow: ellipsis;
 }
-p{
+p{ 
+    word-break: break-word;
     word-wrap: break-word;
 }
