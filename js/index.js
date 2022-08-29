@@ -9,7 +9,7 @@ function carregamento(){
     let telaLogin = document.querySelector('.telaLogin')
 
     gif.classList.add('gif');
-    gif.setAttribute('src','../img/Loading.gif');
+    gif.setAttribute('src','./img/Loading.gif');
 
     telaLogin.appendChild(gif);
 
