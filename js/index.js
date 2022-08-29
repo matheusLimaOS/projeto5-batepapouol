@@ -1,4 +1,5 @@
 let nome;
+let destinatario = 'Todos';
 
 function telaLogin(){
     let containerDiv = document.querySelector('container div');
@@ -40,6 +41,7 @@ async function onSubmit(form){
         intervalPersistencia();
         apagaContainer();
         telaConversa();
+        intervalMensagens()
     })
     res.catch(()=>{
         mensagemErro('Esse nome não está disponivel! Por favor insira outro.');
@@ -50,22 +52,29 @@ async function onSubmit(form){
 
 function apagaContainer(){
     let containerDiv = document.querySelector('container div');
-    let tam = containerDiv.children.length;
-    let i=0;
-
-    for(i=0;i<tam;i++){
-        containerDiv.children[0].remove();
-    }
-
+    containerDiv.innerHTML = '';
 }
 
 function mensagemErro(msg){
-    let container = document.querySelector('container');
-    let tagP = document.createElement('p');
+    let erro = document.querySelector('.erro');
+    if(erro === null || erro === undefined){
+        let container = document.querySelector('container');
+        let tagP = document.createElement('p');
+    
+        tagP.innerHTML = msg;
+        tagP.classList.add('erro');
+        container.appendChild(tagP);
+    }
+    else{
+        erro.classList.remove('displayNone');
+        erro.innerHTML = msg;
+    }
 
-    tagP.innerHTML = msg;
-    tagP.classList.add('erro');
-    container.appendChild(tagP);
+    setTimeout(()=>{
+        let erro = document.querySelector('.erro');
+
+        erro.classList.add('displayNone');
+    },3000)
 }
 async function telaConversa(){
     let containerDiv = document.querySelector('container div');
@@ -83,7 +92,7 @@ async function telaConversa(){
     input.addEventListener('keydown', function(e){
         if(e.keyCode === 13){
             let text = input.value;
-            enviarMensagem('message',text,'Todos');
+            enviarMensagem('message',text);
         }
     });
 }
@@ -136,66 +145,49 @@ function criaFooter(){
 function onClick(){
     let input = document.querySelector('footer input');
     let text = input.value;
-    enviarMensagem('message',text,'Todos');
+    enviarMensagem('message',text);
 }
 function addMensagens(res){
     let container = document.querySelector('.telaMensagens');
     let i=0;
 
     for(i=0;i<res.data.length;i++){
-        let mensagem = document.createElement('div');
-        let time = document.createElement('p');
-        let remetente = document.createElement('p');
-        let destinatario = document.createElement('p');
-        let texto = document.createElement('p');
-        let text = document.createElement('ṕ');
-
-        time.classList.add('time');
-        time.innerHTML = `(${res.data[i].time})`;
-
-        mensagem.appendChild(time);
-
-        mensagem.classList.add('mensagem');
-        mensagem.classList.add(res.data[i].type);
-        
-        destinatario.classList.add('bold');
-        destinatario.innerHTML = res.data[i].to;
-
-        remetente.classList.add('bold');
-        remetente.innerHTML = res.data[i].from;
-
-        texto.innerHTML = res.data[i].text
-
         if(res.data[i].type === 'status'){
-            mensagem.appendChild(remetente);
-            mensagem.appendChild(texto);
+            container.innerHTML += `
+                <div class= 'mensagem ${res.data[i].type}'>
+                    <p class = 'time'> (${res.data[i].time}) </p>
+                    <p class = 'bold'> ${res.data[i].from} </p>
+                    <p> ${res.data[i].text} </p>
+                </div>
+            `
         }
-        if(res.data[i].type === 'message'){
-            if(res.data[i].to === 'Todos'){
-                text.innerHTML = 'para';
-                mensagem.appendChild(remetente);
-                mensagem.appendChild(text);
-                destinatario.innerHTML += ':';
-                mensagem.appendChild(destinatario);
-                mensagem.appendChild(texto);
-            }
-        }
-
-        if(res.data[i].type === "private_message"){
+        else if(res.data[i].type === 'message'){
             if(res.data[i].to === 'Todos' || res.data[i].to === nome){
-                text.innerHTML = 'reservadamente para';
-                mensagem.appendChild(remetente);
-                mensagem.appendChild(text);
-                destinatario.innerHTML += ':';
-                mensagem.appendChild(destinatario);
-                mensagem.appendChild(texto);
-            }
-            else{
-                continue;
+                container.innerHTML += `
+                <div class= 'mensagem ${res.data[i].type}'>
+                    <p class = 'time'> (${res.data[i].time}) </p>
+                    <p class = 'bold'> ${res.data[i].from} </p>
+                    <p> para </p>
+                    <p class = 'bold'> ${res.data[i].to}: </p>
+                    <p> ${res.data[i].text} </p>
+                </div>
+                `
             }
         }
 
-        container.appendChild(mensagem);
+        else if(res.data[i].type === "private_message"){
+            if(res.data[i].to === 'Todos' || res.data[i].to === nome){
+                container.innerHTML += `
+                <div class= 'mensagem ${res.data[i].type}'>
+                    <p class = 'time'> (${res.data[i].time}) </p>
+                    <p class = 'bold'> ${res.data[i].from} </p>
+                    <p> reservadamente para </p>
+                    <p class = 'bold'> ${res.data[i].to}: </p>
+                    <p> ${res.data[i].text} </p>
+                </div>
+                `
+            }
+        }
     }
 }
 function intervalPersistencia(){
@@ -213,11 +205,16 @@ function intervalPersistencia(){
     },5000);
 }
 
-async function enviarMensagem(type,text,to){
-    console.log('chamada');
+function intervalMensagens(){
+    setInterval(()=>{
+        getMensagens();
+    },3000);
+}
+
+async function enviarMensagem(type,text){
     let obj =   {
         from: nome,
-        to: to,
+        to: destinatario,
         text: text,
         type: type
     }
@@ -225,7 +222,8 @@ async function enviarMensagem(type,text,to){
     let res = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages',obj);
 
     res.then((data)=>{
-        apagaContainer();
+        let input = document.querySelector('footer input');
+        input.value = '';
         getMensagens();
     })
     res.catch(()=>{

@@ -152,13 +152,15 @@ form button{
     background-color: #FFDEDE;
 }
 .bold{
-    text-overflow: ellipsis;
     font-weight: 700;
 }
 
 .mensagem .bold{
-    width: 78px;
+    min-width: 40px;
+    max-width: 80px;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-align: center;
+}
+p{
+    word-wrap: break-word;
 }
