@@ -72,6 +72,7 @@ form button{
 }
 
 .footer{
+    flex-wrap: wrap;    
     position: fixed;
     bottom: 0;
     left: 0;
@@ -113,8 +114,7 @@ form button{
     width: 100%;
     height: 91vh;
     overflow: scroll;
-    margin-bottom: 80px;
-    margin-top: 80px;
+    padding-top: 80px;
     background-color: #F3F3F3;
 }
 .displayNone{
@@ -131,7 +131,7 @@ form button{
 
 .mensagem .time{
     color: #AAAAAA;
-    margin-left: 10px;
+    margin: 0 10px;
 }
 .mensagem{
     margin: 5px 0;
@@ -151,7 +151,7 @@ form button{
 .private_message{
     background-color: #FFDEDE;
 }
-.bold{
+b{
     font-weight: 700;
 }
 
@@ -162,6 +162,85 @@ form button{
     text-overflow: ellipsis;
 }
 p{ 
-    word-break: break-word;
-    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.menuLateral{
+    z-index: 1;
+    position: absolute;
+    width: 75%;
+    background-color: #FFFFFF;
+    height: 100vh;
+    right: 0;
+    top: 0;
+    flex-direction: column;
+}
+
+.contraMenu{
+    width: 25%;
+    height: 100vh;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.6);;
+}
+
+.menuLateral > div:nth-child(1), .menuLateral > div:nth-child(3){
+    text-align: center;
+    font-family: 'Roboto',sans-serif;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    height: 50px;
+}
+
+.menuLateral button{
+    font-weight: 400;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    border: 0;
+    width: 100%;
+    background-color: inherit;
+}
+.menuLateral button div:nth-child(1){
+    display: flex;
+    align-items: center;
+
+}
+.menuLateral button div:nth-child(1) p{
+    text-align: start;
+    width: 220px;
+    word-break: initial;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+}
+
+.menuLateral ion-icon{
+    margin: 0 10px;
+    width: 22px;
+    height: 22px;
+}
+
+.menuLateral ion-icon[name="checkmark"]{
+    color:#28BB25;
+}
+
+.participantes{
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+.ofuscar{
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.footer p{
+    color: #505050;
+    width: 100%;
+    margin-left: 25px;
 }

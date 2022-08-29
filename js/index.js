@@ -1,5 +1,20 @@
 let nome;
-let destinatario = 'Todos';
+let destinatario = '';
+let visibilidade = '';
+
+
+function carregamento(){
+    let form = document.querySelector('form');
+    let gif = document.createElement('img');
+    let telaLogin = document.querySelector('.telaLogin')
+
+    gif.classList.add('gif');
+    gif.setAttribute('src','../img/Loading.gif');
+
+    telaLogin.appendChild(gif);
+
+    form.classList.add('displayNone');
+}
 
 function telaLogin(){
     let containerDiv = document.querySelector('container div');
@@ -28,7 +43,13 @@ function telaLogin(){
     containerDiv.appendChild(img);
     containerDiv.appendChild(form);
 }
+function exibirMenu(){
+    let menuLateral = document.querySelector('.menuLateral');
+    let contraMenu = document.querySelector('.contraMenu');
 
+    menuLateral.classList.remove('displayNone');
+    contraMenu.classList.remove('displayNone');
+}
 async function onSubmit(form){
     nome = form.children[0].value;
     let obj = {
@@ -37,6 +58,8 @@ async function onSubmit(form){
 
     let res = axios.post("https://mock-api.driven.com.br/api/v6/uol/participants",obj);
 
+    carregamento();
+
     res.then((data)=>{
         intervalPersistencia();
         apagaContainer();
@@ -44,6 +67,12 @@ async function onSubmit(form){
         intervalMensagens()
     })
     res.catch(()=>{
+        let form = document.querySelector('form');
+        let gif = document.querySelector('.gif');
+        let telaLogin = document.querySelector('.telaLogin');
+        telaLogin.removeChild(gif);
+        form.classList.remove('displayNone');
+
         mensagemErro('Esse nome não está disponivel! Por favor insira outro.');
     })
     
@@ -58,7 +87,7 @@ function apagaContainer(){
 function mensagemErro(msg){
     let erro = document.querySelector('.erro');
     if(erro === null || erro === undefined){
-        let container = document.querySelector('container');
+        let container = document.querySelector('.telaLogin');
         let tagP = document.createElement('p');
     
         tagP.innerHTML = msg;
@@ -80,8 +109,7 @@ async function telaConversa(){
     let containerDiv = document.querySelector('container div');
     containerDiv.classList.remove('telaLogin');
     containerDiv.classList.add('telaMensagens');
-
-
+    configMenuLateral();
     await criaHeader();
     await criaFooter();
 
@@ -92,7 +120,7 @@ async function telaConversa(){
     input.addEventListener('keydown', function(e){
         if(e.keyCode === 13){
             let text = input.value;
-            enviarMensagem('message',text);
+            enviarMensagem(text);
         }
     });
 }
@@ -120,6 +148,7 @@ function criaHeader(){
 
     img.setAttribute('src','./img/logo 1.png');
     ionIcon.setAttribute('name','people');
+    ionIcon.setAttribute('onClick','exibirMenu()');
 
     header.appendChild(img);
     header.appendChild(ionIcon);
@@ -131,6 +160,7 @@ function criaFooter(){
     let footer = document.querySelector('.footer');
     let input = document.createElement('input');
     let ionIcon = document.createElement('ion-icon');
+    let destino = document.createElement('p');
 
     input.setAttribute('placeholder','Escreva aqui...');
     input.setAttribute('type','text');
@@ -139,13 +169,14 @@ function criaFooter(){
 
     footer.appendChild(input);
     footer.appendChild(ionIcon);
+    footer.appendChild(destino);
 
     footer.classList.remove('displayNone');
 }
 function onClick(){
     let input = document.querySelector('footer input');
     let text = input.value;
-    enviarMensagem('message',text);
+    enviarMensagem(text);
 }
 function addMensagens(res){
     let container = document.querySelector('.telaMensagens');
@@ -155,35 +186,39 @@ function addMensagens(res){
         if(res.data[i].type === 'status'){
             container.innerHTML += `
                 <div class= 'mensagem ${res.data[i].type}'>
-                    <p class = 'time'> (${res.data[i].time}) </p>
-                    <p class = 'bold'> ${res.data[i].from} </p>
-                    <p> ${res.data[i].text} </p>
+                    <p class = 'msg'> 
+                        <span class = 'time'>(${res.data[i].time})</span>
+                        <b>${res.data[i].from}</b>
+                        ${res.data[i].text}
+                    </p>
                 </div>
             `
         }
         else if(res.data[i].type === 'message'){
-            if(res.data[i].to === 'Todos' || res.data[i].to === nome){
-                container.innerHTML += `
-                <div class= 'mensagem ${res.data[i].type}'>
-                    <p class = 'time'> (${res.data[i].time}) </p>
-                    <p class = 'bold'> ${res.data[i].from} </p>
-                    <p> para </p>
-                    <p class = 'bold'> ${res.data[i].to}: </p>
-                    <p> ${res.data[i].text} </p>
-                </div>
-                `
-            }
+            container.innerHTML += `
+            <div class= 'mensagem ${res.data[i].type}'>
+                <p>
+                    <span class = 'time'>(${res.data[i].time})</span>
+                    <b> ${res.data[i].from} </b>
+                    para
+                    <b> ${res.data[i].to}: </b>
+                    ${res.data[i].text}
+                </p>
+            </div>
+            `
         }
 
         else if(res.data[i].type === "private_message"){
             if(res.data[i].to === 'Todos' || res.data[i].to === nome){
                 container.innerHTML += `
                 <div class= 'mensagem ${res.data[i].type}'>
-                    <p class = 'time'> (${res.data[i].time}) </p>
-                    <p class = 'bold'> ${res.data[i].from} </p>
-                    <p> reservadamente para </p>
-                    <p class = 'bold'> ${res.data[i].to}: </p>
-                    <p> ${res.data[i].text} </p>
+                    <p>
+                        <span class = 'time'>(${res.data[i].time})</span>
+                        <b> ${res.data[i].from} </b>
+                        reservadamente para
+                        <b> ${res.data[i].to}: </b>
+                        ${res.data[i].text}
+                    </p>
                 </div>
                 `
             }
@@ -204,33 +239,204 @@ function intervalPersistencia(){
         
     },5000);
 }
+function configMenuLateral(){
+    let menuLateral = document.createElement('div');
+    let contraMenu = document.createElement('div');
+    let body = document.querySelector('body');
 
+    menuLateral.classList.add('displayNone','menuLateral');
+    contraMenu.classList.add('displayNone','contraMenu');
+
+    contraMenu.setAttribute('onClick','fecharMenu()');
+
+    menuLateral.innerHTML = `
+        <div>
+            Escolha um contato para enviar mensagem:
+        </div>
+        <ul class = 'participantes'>
+        </ul>
+        <div>
+            Escolha a visibilidade:
+        </div>
+        <ul class = 'visibilidade'>
+            <li data-identifier="visibility">
+                <button onClick = 'selectVisibilidade(this)'>
+                    <div>
+                    <ion-icon name="lock-open"></ion-icon>
+                        Público
+                    </div>
+                    <div >
+                        <ion-icon class='displayNone' name="checkmark"></ion-icon>
+                    </div>  
+                </button>
+            </li>
+            <li data-identifier="visibility">
+                <button onClick = 'selectVisibilidade(this)'>
+                    <div>
+                        <ion-icon name="lock-closed"></ion-icon>
+                        Reservado
+                    </div>
+                    <div >
+                        <ion-icon class='displayNone' name="checkmark"></ion-icon>
+                    </div>
+                </button>
+            </li>
+        </ul>
+    `;
+    
+    intervalParticipantes();
+    listaParticipantes();
+    
+    body.appendChild(menuLateral);
+    body.appendChild(contraMenu);
+}
+
+function fecharMenu(){
+    let menuLateral = document.querySelector('.menuLateral');
+    let contraMenu = document.querySelector('.contraMenu');
+
+    contraMenu.classList.add('displayNone');
+    menuLateral.classList.add('displayNone');
+
+}
+
+function selectVisibilidade(botao){
+    let check = document.querySelectorAll('.visibilidade ion-icon[name="checkmark"]');
+    let botoes = document.querySelectorAll('.visibilidade button');
+
+    botoes[0].setAttribute('onClick','selectVisibilidade(this)');
+    botoes[1].setAttribute('onClick','selectVisibilidade(this)');
+    check[0].classList.add('displayNone');
+    check[1].classList.add('displayNone');
+
+    if(botao.innerText === 'Público'){
+        visibilidade = 'message';
+    }
+    else{
+        visibilidade = 'private_message'
+    }
+
+    botao.children[1].children[0].classList.remove('displayNone');
+    botao.removeAttribute('onClick');
+
+    mudarInfo();
+}
 function intervalMensagens(){
     setInterval(()=>{
         getMensagens();
     },3000);
 }
 
-async function enviarMensagem(type,text){
+function intervalParticipantes(){
+    setInterval(()=>{
+        apagaListaParticipantes();
+        listaParticipantes();
+    },10000);
+}
+function apagaListaParticipantes(){
+    let participantes = document.querySelector('.participantes');
+
+    participantes.innerHTML='';
+}
+function listaParticipantes(){
+    let res = axios.get("https://mock-api.driven.com.br/api/v6/uol/participants");
+
+    res.then((data)=>{
+        let participantes = document.querySelector('.participantes');
+
+        participantes.innerHTML+=`
+            <li data-identifier="participant">
+                <button onClick=selectDestinatario(this)>
+                    <div>
+                        <ion-icon name="people"></ion-icon>
+                        <p>Todos</p>
+                    </div>
+                    <div>
+                        <ion-icon class='displayNone' name="checkmark"></ion-icon>
+                    </div>
+                    
+                </button>
+            </li>
+        `
+
+        for(let i = 0;i<data.data.length;i++){
+
+            participantes.innerHTML+=`
+                <li data-identifier="participant">
+                    <button onClick=selectDestinatario(this)>
+                        <div>
+                            <ion-icon name="person-circle"></ion-icon>
+                            <p>${data.data[i].name}</p>
+                        </div>
+                        <div>
+                            <ion-icon class='displayNone' name="checkmark"></ion-icon>
+                        </div>
+                        
+                    </button>
+                </li>
+            `
+        }
+
+    })
+
+    res.catch(()=>{
+        prompt("Erro ao encontrar participantes, você será redirecionado a tela inicial");
+        window.location.reload();
+    })
+}
+
+function selectDestinatario(buttonDest){
+    let botoes = document.querySelectorAll('.participantes button');
+    let check = document.querySelectorAll('.participantes ion-icon[name="checkmark"]');
+    let i;
+
+    destinatario = buttonDest.children[0].children[1].innerHTML;
+    
+    for(i=0;i<botoes.length;i++){
+        botoes[i].setAttribute('onClick','selectDestinatario(this)');
+    }
+    for(i=0;i<check.length;i++){
+        check[i].classList.add('displayNone');
+    }
+
+    buttonDest.children[1].children[0].classList.remove('displayNone');
+    buttonDest.removeAttribute('onClick');
+
+    mudarInfo();
+}
+
+function mudarInfo(){
+    let info = document.querySelector('footer p');
+    if(destinatario !== '' && visibilidade !== ''){
+        info.innerHTML = `Enviando para ${destinatario} (${visibilidade==='message' ? 'Publico' : 'Reservadamente'})`
+    }
+}
+
+async function enviarMensagem(text){
     let obj =   {
         from: nome,
         to: destinatario,
         text: text,
-        type: type
+        type: visibilidade
     }
 
-    let res = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages',obj);
+    if(obj.to === '' || obj.type === ''){
+        alert('Por favor selecione o destinatário e a visibilidade da mensagem');
+        return;
+    }
+    else{
+        let res = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages',obj);
 
-    res.then((data)=>{
-        let input = document.querySelector('footer input');
-        input.value = '';
-        getMensagens();
-    })
-    res.catch(()=>{
-        alert("Erro ao enviar a mensagem, você será redirecionado a pagina de login!");
-        window.location.reload();
-    })
-
+        res.then((data)=>{
+            let input = document.querySelector('footer input');
+            input.value = '';
+            getMensagens();
+        })
+        res.catch(()=>{
+            alert("Erro ao enviar a mensagem, você será redirecionado a pagina de login!");
+            window.location.reload();
+        })
+    }
 }
 
 telaLogin();
